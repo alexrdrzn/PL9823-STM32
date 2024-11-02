@@ -2,7 +2,7 @@
  * pl9823.c
  *
  *  Created on: Oct 31, 2024
- *      Author: alexr
+ *      Author: alexrdrzn
  */
 #include "pl9823.h"
 
@@ -42,36 +42,27 @@ void resetLEDs()
 void sendData()
 {
 	uint32_t index = 0;
-	uint32_t color;
+	uint32_t color = 0;
 
-	for (int i = 0; i < MAX_LEDS; i++)
+	for (int i = 0; i < MAX_LEDS; i++) 
 	{
-		color = ((LED_Data[i][1] << 16) | (LED_Data[i][2] << 8)
-				| (LED_Data[i][3]));
-		for (int i = 23; i >= 0; i--)
+		color = (LED_Data[i][1] << 16) | (LED_Data[i][2] << 8) | LED_Data[i][3];
+		for (int j = 23; j >= 0; j--, index++) 
 		{
-			if (color & (1 << i))
-			{
-				pwmData[index] = 20;
-			}
-			else
-			{
-				pwmData[index] = 5;
-			}
-			index++;
+			pwmData[index] = (color & (1 << j)) ? TIME_ON_HIGH : TIME_ON_LOW;
 		}
 	}
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 50; i++, index++) 
 	{
 		pwmData[index] = 0;
-		index++;
 	}
-	HAL_TIM_PWM_Start_DMA(&TIM_HANDLER, TIM_CHANNEL_1, (uint32_t*) pwmData, index);
-	while (!datasentflag)
-	{
-	};
+
+	HAL_TIM_PWM_Start_DMA(&TIM_HANDLER, TIM_CHANNEL_1, (uint32_t*)pwmData, index);
+
+	while (!datasentflag);
 	datasentflag = 0;
 }
+
 
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {

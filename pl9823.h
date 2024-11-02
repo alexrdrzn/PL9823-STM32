@@ -12,12 +12,22 @@
 #include "main.h"
 
 #define MAX_LEDS 4
+#define TIME_ON_HIGH 20
+#define TIME_ON_LOW 5
+
 #define PI 3.14159265
 #define TIM_HANDLER htim1
 
+
 enum color
 {
-	red, green, blue, white, black, purple, orange
+	red, 
+	green, 
+	blue, 
+	white, 
+	black, 
+	purple, 
+	orange
 };
 
 extern TIM_HandleTypeDef htim1;
